@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SAKTHI's Chatbot</title>
+    <style>
+        body {
+            font-family: Arial;
+            background-image: url("/static/images/background.jpg");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            margin: 0;
+            padding: 0;
+        }
+        #chat-box {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 700px;
+            margin: 50px auto;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .message {
+            display: flex;
+            align-items: flex-start;
+            margin: 15px 0;
+        }
+        .message img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .user .text {
+            background-color: #e0f7fa;
+            padding: 10px 15px;
+            border-radius: 15px;
+            max-width: 80%;
+        }
+        .bot .text {
+            background-color: #f1f8e9;
+            padding: 10px 15px;
+            border-radius: 15px;
+            max-width: 80%;
+        }
+        #user-input {
+            width: 80%;
+            padding: 10px;
+            border-radius: 20px;
+            border: 1px solid #ccc;
+            margin-right: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: none;
+            background-color: #2196f3;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #1976d2;
+        }
+        #input-area {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="chat-box">
+        <h2 style="text-align:center;">💬 SAKTHI's Chatbot</h2>
+        <div id="chat-log"></div>
+        <div id="input-area">
+            <input type="text" id="user-input" placeholder="Type a message..." autofocus />
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        async function sendMessage() {
+            const input = document.getElementById('user-input');
+            const message = input.value.trim();
+            if (!message) return;
+
+            addMessage('user', message);
+            input.value = '';
+
+            const response = await fetch('/send', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message })
+            });
+
+            const data = await response.json();
+            addMessage('bot', data.response);
+        }
+
+        function addMessage(sender, text) {
+            const chatLog = document.getElementById('chat-log');
+            const msgDiv = document.createElement('div');
+            msgDiv.classList.add('message', sender);
+
+            const avatar = document.createElement('img');
+            avatar.src = sender === 'user' ? '/static/images/user.png' : '/static/images/chatbot.png';
+
+            const textDiv = document.createElement('div');
+            textDiv.classList.add('text');
+            textDiv.innerText = text;
+
+            msgDiv.appendChild(avatar);
+            msgDiv.appendChild(textDiv);
+            chatLog.appendChild(msgDiv);
+            chatLog.scrollTop = chatLog.scrollHeight;
+        }
+    </script>
+</body>
+</html>
